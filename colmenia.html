@@ -103,6 +103,7 @@ function renderLesson(){const s=DATA[cur].seasons[curS];if(!s)return;const l=s.i
  const ext=(l.ext||[]).map(u=>`<div>🔗 <a href="${esc(u)}" target="_blank">${esc(u)}</a></div>`).join('');
  const src=l.tg?`<div>📍 Fuente Telegram: <a href="${esc(l.tg)}" target="_blank">${esc(l.tg)}</a>${l.date?' · '+esc(l.date):''}</div>`:'';
  let md=[];if(l.media){if(l.media.video)md.push('🎬 vídeo');if(l.media.voice)md.push('🎤 audio');}
+ const dup=l.dup?`<span class="grpnote" style="background:#fdecea;color:#b3261e">⚠️ Ya cubierto por «${esc(l.dup)}» — no la subas dos veces.</span><br>`:'';
  const grp=l.ids&&l.ids.length>1?`<span class="grpnote">📦 Post completo: ${l.ids.length} mensajes de Telegram (${l.ids.join(', ')})</span><br>`:'';
  content.innerHTML=`<span class="backlink" onclick="home()">← Cursos</span>
   <div class="seasontag">${esc(s.t)}</div>
