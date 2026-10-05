@@ -1,0 +1,885 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sesión 1 · IA aplicada a logopedia — AELFA-IF</title>
+<meta name="robots" content="noindex,nofollow">
+<style>
+  :root {
+    --ground: #F2F6F5; --surface: #FFFFFF; --surface-2: #E8EFED;
+    --ink: #101917; --ink-2: #3D4B49; --muted: #667875;
+    --line: #D3E0DD; --line-2: #BACFCB;
+    --accent: #0E6B60; --accent-soft: #D9EBE8;
+    --ok: #23694C; --ok-soft: #DCEDE4;
+    --mid: #8A5C08; --mid-soft: #F4E8CE;
+    --gap: #9A3832; --gap-soft: #F6E0DE;
+    --serif: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
+    --sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0D1312; --surface: #151E1D; --surface-2: #1C2726;
+      --ink: #E7EEEC; --ink-2: #BCCCC9; --muted: #8C9F9C;
+      --line: #2A3937; --line-2: #3A4B49;
+      --accent: #4CC2B0; --accent-soft: #17322F;
+      --ok: #63B78C; --ok-soft: #16301F;
+      --mid: #D3A44A; --mid-soft: #322613;
+      --gap: #DE7C74; --gap-soft: #38201E;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0D1312; --surface: #151E1D; --surface-2: #1C2726;
+    --ink: #E7EEEC; --ink-2: #BCCCC9; --muted: #8C9F9C;
+    --line: #2A3937; --line-2: #3A4B49;
+    --accent: #4CC2B0; --accent-soft: #17322F;
+    --ok: #63B78C; --ok-soft: #16301F;
+    --mid: #D3A44A; --mid-soft: #322613;
+    --gap: #DE7C74; --gap-soft: #38201E;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; background: var(--ground); color: var(--ink);
+    font-family: var(--sans); -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+
+  /* ---------- escenario ---------- */
+  .stage { position: fixed; inset: 0 0 46px 0; display: grid; place-items: center; padding: 3vh 4vw; }
+  .slide {
+    display: none; width: 100%; max-width: 1180px; max-height: 100%;
+    overflow-y: auto; scrollbar-width: thin;
+  }
+  .slide.on { display: block; animation: in .28s ease-out; }
+  @keyframes in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  .eyebrow {
+    font-family: var(--mono); font-size: clamp(10px,1.1vw,13px); letter-spacing: .16em;
+    text-transform: uppercase; color: var(--accent); margin: 0 0 clamp(10px,1.6vh,20px);
+  }
+  h1 {
+    font-family: var(--serif); font-weight: 400; font-size: clamp(30px,5.4vw,68px);
+    line-height: 1.08; letter-spacing: -.015em; margin: 0 0 .35em; text-wrap: balance;
+  }
+  h2 {
+    font-family: var(--serif); font-weight: 400; font-size: clamp(26px,4vw,48px);
+    line-height: 1.14; margin: 0 0 .5em; text-wrap: balance; max-width: 20ch;
+  }
+  h3 {
+    font-family: var(--sans); font-weight: 600; font-size: clamp(15px,1.6vw,20px);
+    margin: 0 0 .7em; color: var(--ink);
+  }
+  .lead { font-size: clamp(16px,2vw,26px); line-height: 1.5; color: var(--ink-2); max-width: 46ch; margin: 0 0 .9em; }
+  .lead.wide { max-width: 62ch; }
+  p.small { font-size: clamp(13px,1.4vw,17px); line-height: 1.55; color: var(--muted); max-width: 60ch; }
+  strong { font-weight: 700; color: var(--ink); }
+  em.hl {
+    font-style: normal; background: var(--accent-soft); color: var(--accent);
+    padding: 1px 8px; border-radius: 4px;
+    -webkit-box-decoration-break: clone; box-decoration-break: clone;
+  }
+
+  .center { text-align: center; }
+  .slide.center.on { display: grid; place-items: center; }
+  .center .lead, .center h2 { margin-left: auto; margin-right: auto; }
+
+  /* frase grande */
+  .quote {
+    font-family: var(--serif); font-size: clamp(24px,3.6vw,46px); line-height: 1.3;
+    border-left: 4px solid var(--accent); padding: .2em 0 .2em .7em; max-width: 24ch;
+    text-wrap: balance;
+  }
+  .quote-src { font-family: var(--mono); font-size: clamp(11px,1.2vw,14px); color: var(--muted); margin-top: 1.4em; }
+
+  /* rejillas */
+  .cols { display: grid; grid-template-columns: repeat(auto-fit,minmax(230px,1fr)); gap: clamp(12px,2vw,26px); }
+  .cols.two { grid-template-columns: repeat(auto-fit,minmax(300px,1fr)); }
+  .card {
+    background: var(--surface); border: 1px solid var(--line); border-top: 4px solid var(--line-2);
+    border-radius: 0 0 6px 6px; padding: clamp(14px,1.8vw,22px);
+  }
+  .card.a { border-top-color: var(--accent); }
+  .card.ok { border-top-color: var(--ok); }
+  .card.mid { border-top-color: var(--mid); }
+  .card.bad { border-top-color: var(--gap); }
+  .card b { display: block; font-size: clamp(14px,1.5vw,19px); margin-bottom: .35em; }
+  .card span { display: block; font-size: clamp(12.5px,1.3vw,16px); line-height: 1.45; color: var(--muted); }
+  .card .n { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: .1em; display: block; margin-bottom: .5em; }
+
+  /* petición en pantalla */
+  .ask {
+    font-family: var(--mono); font-size: clamp(13px,1.5vw,19px); line-height: 1.6;
+    background: var(--surface-2); border-left: 4px solid var(--line-2); border-radius: 4px;
+    padding: clamp(14px,1.8vw,22px); white-space: pre-wrap; color: var(--ink-2); margin: 0 0 1em;
+  }
+  .ask.a { border-left-color: var(--accent); }
+  .ask b { color: var(--accent); }
+
+  .copia {
+    font: inherit; font-size: clamp(14px,1.5vw,18px); font-weight: 600; cursor: pointer;
+    background: var(--accent); color: var(--ground); border: 0; border-radius: 5px; padding: 11px 22px;
+  }
+  .copia:hover { filter: brightness(1.08); }
+  .copia:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 2px; }
+  .copia.ok { background: var(--ok); }
+
+  /* pasos numerados */
+  /* ---------- diagramas ---------- */
+  .dg { width: 100%; height: auto; display: block; margin: .4em 0 .2em; color: var(--ink-2); }
+  .dg-cap { font-family: var(--mono); font-size: clamp(10px,1.1vw,13px); color: var(--muted); line-height: 1.5; margin: .2em 0 0; }
+  .d-box { fill: var(--surface-2); stroke: var(--line-2); stroke-width: 1.5; }
+  .d-box.pro { stroke: var(--ok); } .d-box.tool { stroke: var(--mid); } .d-box.al { stroke: var(--gap); }
+  .d-ln { stroke: var(--line-2); stroke-width: 1.5; fill: none; }
+  .d-tx { fill: var(--ink); font-family: var(--mono); font-size: 13px; }
+  .d-tx.sm { font-size: 11px; fill: var(--muted); }
+  .d-tx.bg { font-family: var(--sans); font-weight: 700; font-size: 16px; }
+  .f-pro { fill: var(--ok); } .f-tool { fill: var(--mid); } .f-al { fill: var(--gap); }
+  .st-pro { stroke: var(--ok); stroke-width: 2.5; fill: none; }
+  .st-al { stroke: var(--gap); stroke-width: 2.5; fill: none; }
+  .l-pro { fill: var(--ok); font-family: var(--mono); font-size: 11px; }
+  .l-tool { fill: var(--mid); font-family: var(--mono); font-size: 11px; }
+  .l-al { fill: var(--gap); font-family: var(--mono); font-size: 11px; }
+  .d-gh { fill: none; stroke: var(--line-2); stroke-width: 1.5; stroke-dasharray: 4 4; }
+  .d-on { fill: var(--surface); font-family: var(--mono); font-size: 13px; }
+
+  /* el grupo: anillo y barras del test de nivel */
+  .grupo { display: grid; grid-template-columns: repeat(auto-fit,minmax(300px,1fr)); gap: clamp(16px,3vw,44px); align-items: start; }
+  .gcol { min-width: 0; }
+  .gdn { display: flex; flex-wrap: wrap; align-items: center; gap: clamp(12px,2vw,26px); }
+  .gdn svg { width: clamp(140px,17vw,210px); height: auto; flex: none; }
+  .gnum { font-family: var(--serif); font-size: 40px; fill: var(--ink); }
+  .gsub { font-family: var(--mono); font-size: 11px; fill: var(--muted); }
+  .gley { display: grid; gap: 7px; min-width: 0; }
+  .gl { display: grid; grid-template-columns: 14px 1fr auto; gap: 10px; align-items: center; font-size: clamp(13px,1.4vw,17px); color: var(--ink-2); }
+  .gl i { width: 14px; height: 14px; border-radius: 3px; background: var(--accent); }
+  .gl b, .gb b { font-variant-numeric: tabular-nums; color: var(--ink); }
+  .gbars { display: grid; gap: 11px; }
+  .gb { display: grid; grid-template-columns: minmax(0,13em) 1fr 1.6em; gap: 12px; align-items: center; font-size: clamp(13px,1.4vw,17px); color: var(--ink-2); }
+  .gp { height: 14px; border-radius: 7px; background: var(--surface-2); overflow: hidden; }
+  .gp div { height: 100%; border-radius: 7px; background: var(--accent); }
+
+  .steps { display: grid; gap: 10px; }
+  .step {
+    display: grid; grid-template-columns: auto 1fr auto; gap: 16px; align-items: baseline;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 5px;
+    padding: clamp(11px,1.4vw,17px) clamp(14px,1.6vw,20px);
+  }
+  .step i { font-family: var(--mono); font-style: normal; color: var(--accent); font-size: clamp(13px,1.4vw,17px); }
+  .step b { font-weight: 600; font-size: clamp(14px,1.5vw,19px); }
+  .step u { text-decoration: none; font-family: var(--mono); font-size: clamp(10px,1.1vw,12.5px);
+            letter-spacing: .08em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; }
+  .step u.pro { background: var(--ok-soft); color: var(--ok); }
+  .step u.tool { background: var(--surface-2); color: var(--muted); }
+
+  /* lista de palabras */
+  .words { display: flex; flex-wrap: wrap; gap: 10px; margin: .6em 0 0; }
+  .word {
+    font-size: clamp(14px,1.7vw,22px); padding: 8px 18px; border-radius: 999px;
+    background: var(--surface); border: 1px solid var(--line-2);
+  }
+
+  /* demo */
+  .demo {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 6px;
+    padding: clamp(16px,2vw,26px); display: grid; gap: 14px;
+  }
+  .demo-tag {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--gap); background: var(--gap-soft); padding: 4px 10px; border-radius: 999px; justify-self: start;
+  }
+  .demo-tag.safe { color: var(--ok); background: var(--ok-soft); }
+  .demo a { color: var(--accent); font-family: var(--mono); font-size: clamp(12px,1.3vw,15px); word-break: break-all; }
+  .backup {
+    border: 1px dashed var(--line-2); border-radius: 5px; padding: 14px 16px;
+    font-size: clamp(12.5px,1.3vw,15px); color: var(--muted); line-height: 1.5;
+  }
+  .backup b { color: var(--mid); }
+
+  /* abrir algo de verdad */
+  .abre {
+    display: inline-flex; align-items: center; gap: 9px; text-decoration: none;
+    font-family: var(--sans); font-size: clamp(13px,1.4vw,16px); font-weight: 600;
+    background: var(--accent); color: var(--surface);
+    border-radius: 5px; padding: 11px 20px; margin: .2em .5em .2em 0;
+  }
+  :root[data-theme="dark"] .abre, :root:not([data-theme="light"]) .abre { color: #0D1312; }
+  @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) .abre { color: #FFFFFF; } }
+  .abre:hover { filter: brightness(1.08); }
+  .abre.sec { background: none; color: var(--accent); border: 1px solid var(--line-2); }
+  .abre small { font-weight: 400; opacity: .8; font-size: .84em; }
+  .abrir-fila { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin: .9em 0 .3em; }
+  .abrir-nota { font-size: clamp(12px,1.2vw,14px); color: var(--muted); }
+
+  /* hueco de captura: se ve en pantalla hasta que se pega la imagen */
+  .shot {
+    border: 2px dashed var(--line-2); border-radius: 6px;
+    display: grid; place-items: center; text-align: center;
+    padding: clamp(18px,3vh,34px) 22px; gap: 6px; margin: 0 0 1em;
+    background: var(--surface);
+  }
+  .shot b {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--mid);
+  }
+  .shot span { font-size: clamp(12.5px,1.3vw,15px); color: var(--muted); max-width: 46ch; line-height: 1.5; }
+  .shot img { max-width: 100%; height: auto; border-radius: 4px; display: block; }
+  .shot.puesta { border-style: solid; border-color: var(--line); padding: 6px; }
+
+  /* barra inferior */
+  .bar {
+    position: fixed; left: 0; right: 0; bottom: 0; height: 46px;
+    display: flex; align-items: center; gap: 14px; padding: 0 16px;
+    background: var(--surface); border-top: 1px solid var(--line);
+    font-family: var(--mono); font-size: 11.5px; color: var(--muted);
+  }
+  .bar .clock { color: var(--accent); font-size: 13px; letter-spacing: .06em; }
+  .bar .tramo { color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bar .right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+  .bar button {
+    font: inherit; font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+    background: none; border: 1px solid var(--line); color: var(--muted);
+    border-radius: 999px; padding: 5px 11px; cursor: pointer;
+  }
+  .bar button:hover { border-color: var(--accent); color: var(--accent); }
+  .bar button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
+  .prog { position: fixed; left: 0; bottom: 46px; height: 2px; background: var(--accent); transition: width .25s; z-index: 5; }
+  #timer.run { color: var(--ok); }
+  #upd { color: var(--muted); }
+  @media (max-width: 900px) { #upd { display: none; } }
+
+  /* notas del ponente */
+  .notes {
+    position: fixed; right: 0; top: 0; bottom: 46px; width: min(430px, 46vw);
+    background: var(--surface); border-left: 1px solid var(--line);
+    padding: 22px 24px 30px; overflow-y: auto; display: none; z-index: 4;
+    font-size: 14.5px; line-height: 1.55; color: var(--ink-2);
+  }
+  body.notes-on .notes.on { display: block; }
+  body.notes-on .stage { right: min(430px, 46vw); }
+  .notes h4 {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--accent); margin: 0 0 12px;
+  }
+  .notes p { margin: 0 0 .9em; }
+  .notes .say {
+    background: var(--accent-soft); color: var(--accent); border-radius: 5px;
+    padding: 12px 14px; font-family: var(--serif); font-size: 15.5px; line-height: 1.45;
+  }
+  .notes .warn { background: var(--mid-soft); color: var(--mid); border-radius: 5px; padding: 12px 14px; }
+  .notes .warn b, .notes .say b { color: inherit; }
+
+  /* índice */
+  .grid {
+    position: fixed; inset: 0 0 46px 0; background: var(--ground); z-index: 6;
+    padding: 26px 3vw; overflow-y: auto; display: none;
+    grid-template-columns: repeat(auto-fill,minmax(210px,1fr)); gap: 12px; align-content: start;
+  }
+  body.grid-on .grid { display: grid; }
+  .gcell {
+    text-align: left; font: inherit; cursor: pointer; background: var(--surface);
+    border: 1px solid var(--line); border-left: 3px solid var(--line-2); border-radius: 4px; padding: 12px 14px;
+  }
+  .gcell:hover { border-color: var(--accent); }
+  .gcell.here { border-left-color: var(--accent); background: var(--accent-soft); }
+  .gcell i { font-family: var(--mono); font-style: normal; font-size: 10.5px; color: var(--accent); display: block; margin-bottom: 5px; }
+  .gcell span { font-size: 13.5px; line-height: 1.35; color: var(--ink); display: block; }
+
+  @media (max-width: 700px) {
+    body.notes-on .stage { right: 0; }
+    .notes { width: 100%; }
+  }
+</style>
+<style>[hidden]{display:none!important}</style>
+</head>
+<body>
+
+<div class="stage" id="stage">
+
+<!-- ============ 1 · PORTADA ============ -->
+<section class="slide center" data-t="16:30" data-tramo="Apertura">
+  <p class="eyebrow">AELFA-IF · Viernes 9 de octubre de 2026</p>
+  <h1>IA aplicada a logopedia:<br>criterio, posibilidades y límites</h1>
+  <p class="lead">Sesión 1 de 3 · Modelando el futuro de la logopedia con inteligencia artificial</p>
+  <p class="small">José Aserraf Cohén · logopeda</p>
+  
+</section>
+
+<!-- ============ 2 · CÓMO FUNCIONA ============ -->
+<section class="slide center" data-t="16:30" data-tramo="Apertura · la frase">
+  <div class="quote" style="max-width:18ch">Herramienta<br>no es intervención.</div>
+  <p class="quote-src">Marzo de 2026 · la frase del vídeo que visteis esta semana</p>
+  
+</section>
+
+<!-- ============ 3 · ESTE GRUPO, CON SU GRÁFICO ============ -->
+<section class="slide" data-t="16:31" data-tramo="Apertura · este grupo">
+  <p class="eyebrow">Del test de nivel · 11 respuestas de 26 · a 2 de octubre</p>
+  <h2>Y aquí estamos nosotros</h2>
+  <div class="grupo">
+    <div class="gcol">
+      <h3>Cuánto usáis ya la IA</h3>
+      <div class="gdn">
+        <svg viewBox="0 0 200 200" role="img" aria-label="De 11 respuestas: 1 nunca, 2 la probaron alguna vez, 1 de vez en cuando, 4 cada semana y 3 a diario."><circle cx="100" cy="100" r="70" fill="none" stroke="var(--accent)" stroke-opacity="0.22" stroke-width="34" stroke-dasharray="39.98 399.84" stroke-dashoffset="0.00" transform="rotate(-90 100 100)"/><circle cx="100" cy="100" r="70" fill="none" stroke="var(--accent)" stroke-opacity="0.42" stroke-width="34" stroke-dasharray="79.97 359.86" stroke-dashoffset="-39.98" transform="rotate(-90 100 100)"/><circle cx="100" cy="100" r="70" fill="none" stroke="var(--accent)" stroke-opacity="0.62" stroke-width="34" stroke-dasharray="39.98 399.84" stroke-dashoffset="-119.95" transform="rotate(-90 100 100)"/><circle cx="100" cy="100" r="70" fill="none" stroke="var(--accent)" stroke-opacity="0.82" stroke-width="34" stroke-dasharray="159.94 279.89" stroke-dashoffset="-159.94" transform="rotate(-90 100 100)"/><circle cx="100" cy="100" r="70" fill="none" stroke="var(--accent)" stroke-opacity="1" stroke-width="34" stroke-dasharray="119.95 319.87" stroke-dashoffset="-319.87" transform="rotate(-90 100 100)"/>
+          <text x="100" y="98" text-anchor="middle" class="gnum">11</text>
+          <text x="100" y="118" text-anchor="middle" class="gsub">respuestas</text>
+        </svg>
+        <div class="gley"><div class="gl"><i style="opacity:0.22"></i><span>Nunca</span><b>1</b></div><div class="gl"><i style="opacity:0.42"></i><span>La probó alguna vez</span><b>2</b></div><div class="gl"><i style="opacity:0.62"></i><span>De vez en cuando</span><b>1</b></div><div class="gl"><i style="opacity:0.82"></i><span>Cada semana</span><b>4</b></div><div class="gl"><i style="opacity:1"></i><span>A diario</span><b>3</b></div></div>
+      </div>
+    </div>
+    <div class="gcol">
+      <h3>Lo que más habéis pedido</h3>
+      <div class="gbars"><div class="gb"><span>Preparar material</span><div class="gp"><div style="width:91%"></div></div><b>10</b></div><div class="gb"><span>Los informes</span><div class="gp"><div style="width:73%"></div></div><b>8</b></div><div class="gb"><span>Qué puedo legalmente</span><div class="gp"><div style="width:64%"></div></div><b>7</b></div><div class="gb"><span>Ordenar mi forma de trabajar</span><div class="gp"><div style="width:64%"></div></div><b>7</b></div><div class="gb"><span>Montar algo propio</span><div class="gp"><div style="width:55%"></div></div><b>6</b></div></div>
+    </div>
+  </div>
+  <p class="lead wide" style="margin-top:1.1em">7 de 11 ya la usáis cada semana. 3 casi no la habéis abierto. <strong>Esta tarde es para los dos.</strong></p>
+  
+</section>
+
+<section class="slide" data-t="16:32" data-tramo="Apertura · logística">
+  <p class="eyebrow">Dos minutos de logística y no más</p>
+  <h2>Cómo funciona esto</h2>
+  <div class="cols">
+    <div class="card a"><span class="n">6 h</span><b>Tres viernes en directo</b><span>9, 16 y 23 de octubre, 16:30–18:30. Quedan grabadas en el aula</span></div>
+    <div class="card ok"><span class="n">2 h</span><b>Trabajo en el aula</b><span>Cuatro entregas repartidas entre sesiones. Cuentan para las ocho horas acreditadas</span></div>
+    <div class="card"><span class="n">Siempre</span><b>Un caso tuyo</b><span>El que entregaste en la ficha. Os vais a ver mucho estas tres semanas</span></div>
+  </div>
+  <p class="small" style="margin-top:1.4em">Las entregas se comentan <strong>sin nombres</strong> al empezar cada sesión. Quien prefiera que la suya no se comente, lo dice al subirla.</p>
+  
+</section>
+
+<!-- ============ 4 · RETO 1 · PETICIÓN A ============ -->
+<section class="slide" data-t="16:34" data-tramo="Reto 1 · ¿quién decide?">
+  <p class="eyebrow">Reto 1 · Lo hacéis vosotros, en vuestra IA · caso inventado</p>
+  <h2>Petición A</h2>
+  <div class="ask">Soy logopeda. Tengo un niño de 6 años que tiene dificultades
+para pronunciar la /r/.
+
+<b>¿Qué objetivos terapéuticos le pongo?</b></div>
+  <p><button class="copia" type="button" id="copiaA">Copiar la petición A</button></p>
+  <p class="lead">Copiadla y enviad. Quien no tenga una IA abierta, mira la mía.</p>
+  
+</section>
+
+<!-- ============ 5 · LA PREGUNTA ============ -->
+<section class="slide center" data-t="16:36" data-tramo="Reto 1 · ¿quién decide?">
+  <h1 style="max-width:16ch">¿Quién ha decidido esto?</h1>
+  
+</section>
+
+<!-- ============ 6 · PETICIÓN B ============ -->
+<section class="slide" data-t="16:37" data-tramo="Reto 1 · ¿quién decide?">
+  <p class="eyebrow">El mismo niño, la misma herramienta</p>
+  <h2>Petición B</h2>
+  <div class="ask a">Soy logopeda. He decidido trabajar con un niño de 6 años la /r/
+en posición inicial de palabra, con apoyo visual.
+
+<b>Redáctame tres objetivos observables para su plan de intervención.
+No cambies lo que he decidido.</b></div>
+  <p><button class="copia" type="button" id="copiaB">Copiar la petición B</button></p>
+  <p class="lead">Contesta. Y contesta parecido.</p>
+  
+</section>
+
+<!-- ============ 7 · LA LÍNEA ============ -->
+<section class="slide" data-t="16:39" data-tramo="Reto 1 · dónde está la diferencia">
+  <p class="eyebrow">Las dos respuestas se parecen. La diferencia está aquí</p>
+  <h2>Quién decide y quién ejecuta</h2>
+  <svg class="dg" viewBox="0 0 900 258" role="img" aria-label="Las dos peticiones producen una salida parecida; en la primera la decisión clínica la toma la máquina y en la segunda la trae ya tomada el profesional.">
+    <defs><marker id="dgA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+    <text x="8" y="16" class="d-tx sm">PETICIÓN A</text>
+    <text x="470" y="16" class="d-tx sm">PETICIÓN B</text>
+    <line x1="450" y1="6" x2="450" y2="252" class="d-gh"/>
+
+    <rect x="8" y="28" width="424" height="46" rx="3" class="d-box"/>
+    <text x="24" y="50" class="d-tx">«¿Qué objetivos terapéuticos</text>
+    <text x="24" y="68" class="d-tx">le pongo?»</text>
+    <line x1="220" y1="74" x2="220" y2="106" class="d-ln" marker-end="url(#dgA)"/>
+    <rect x="110" y="108" width="220" height="42" rx="3" class="d-box tool"/>
+    <text x="220" y="135" class="d-tx bg f-tool" text-anchor="middle">decide la máquina</text>
+    <line x1="220" y1="150" x2="220" y2="182" class="d-ln" marker-end="url(#dgA)"/>
+    <rect x="70" y="184" width="300" height="54" rx="3" class="d-box"/>
+    <text x="220" y="207" class="d-tx" text-anchor="middle">Objetivos para la /r/,</text>
+    <text x="220" y="226" class="d-tx" text-anchor="middle">bien redactados</text>
+
+    <rect x="470" y="28" width="424" height="46" rx="3" class="d-box"/>
+    <text x="486" y="50" class="d-tx">«Esto ya lo he decidido yo.</text>
+    <text x="486" y="68" class="d-tx">Redáctame tres objetivos.»</text>
+    <line x1="682" y1="74" x2="682" y2="106" class="d-ln" marker-end="url(#dgA)"/>
+    <rect x="572" y="108" width="220" height="42" rx="3" class="d-box pro"/>
+    <text x="682" y="135" class="d-tx bg f-pro" text-anchor="middle">ya venía decidido</text>
+    <line x1="682" y1="150" x2="682" y2="182" class="d-ln" marker-end="url(#dgA)"/>
+    <rect x="532" y="184" width="300" height="54" rx="3" class="d-box"/>
+    <text x="682" y="207" class="d-tx" text-anchor="middle">Objetivos para la /r/,</text>
+    <text x="682" y="226" class="d-tx" text-anchor="middle">bien redactados</text>
+  </svg>
+  <p class="dg-cap">Las dos cajas de abajo son casi iguales · lo único que cambia está en la fila del medio, y no se ve en la pantalla</p>
+  
+</section>
+
+<section class="slide center" data-t="16:39" data-tramo="Reto 1 · ¿quién decide?">
+  <div class="quote">La IA se apoya en una decisión ya tomada.<br>No la toma.</div>
+  <p class="quote-src">Es la línea que separa todo lo que vamos a ver hoy</p>
+  
+</section>
+
+<!-- ============ 8 · LAS CINCO FAMILIAS ============ -->
+<section class="slide" data-t="16:40" data-tramo="P26 · usos reales">
+  <p class="eyebrow">16:40 · Usos reales · por función, nunca por marca</p>
+  <h2>Cinco familias</h2>
+  <div class="cols">
+    <div class="card a"><span class="n">01</span><b>Reconocimiento del habla</b><span>Convierte voz en texto</span></div>
+    <div class="card a"><span class="n">02</span><b>Modelos de lenguaje</b><span>Redactan, resumen, adaptan, comparan</span></div>
+    <div class="card a"><span class="n">03</span><b>Generación de imagen</b><span>Ilustración y apoyo visual</span></div>
+    <div class="card a"><span class="n">04</span><b>Material interactivo</b><span>Actividades que responden</span></div>
+    <div class="card a"><span class="n">05</span><b>Asistentes con tus documentos</b><span>Responden conforme a lo tuyo</span></div>
+  </div>
+  <p class="small" style="margin-top:1.4em">Dentro de un año la mitad de las marcas serán otras. <strong>La función seguirá siendo la misma.</strong></p>
+  <div class="abrir-fila">
+    <a class="abre sec" href="https://foniafonia.github.io/logoped-ia-tools/radar-materiales-landing.html" target="_blank" rel="noopener">Radar de materiales ↗</a>
+    <span class="abrir-nota">Solo si alguien pregunta «¿y esto qué familia es?». Si no, se sigue.</span>
+  </div>
+  
+</section>
+
+<!-- ============ 9 · PRET-A ============ -->
+<section class="slide" data-t="16:50" data-tramo="P26 · PRET-A Fluidez">
+  <p class="eyebrow">Demostración · evaluación de fluidez</p>
+  <h2>El bloqueo que desaparece</h2>
+  <div class="cols two">
+    <div class="card"><b>Lo que se oye</b><span style="font-family:var(--mono);font-size:clamp(15px,2vw,26px);color:var(--ink);margin-top:.4em">t- t- t- tal</span></div>
+    <div class="card bad"><b>Lo que transcribe</b><span style="font-family:var(--mono);font-size:clamp(15px,2vw,26px);color:var(--ink);margin-top:.4em">qué tal</span></div>
+  </div>
+  <svg class="dg" viewBox="0 0 900 190" role="img" aria-label="En la onda del audio hay tres segundos de bloqueo marcados; en la transcripción que devuelve la herramienta ese bloqueo no aparece.">
+    <text x="8" y="14" class="d-tx sm">LO QUE SE OYE</text>
+    <rect x="8" y="22" width="884" height="66" rx="3" class="d-box"/>
+    <polyline class="st-pro" points="26,55 42,38 58,72 74,32 90,78 106,44 122,66 138,40"/>
+    <rect x="150" y="26" width="120" height="58" rx="2" fill="none" stroke="var(--gap)" stroke-width="1.5" stroke-dasharray="3 3"/>
+    <polyline class="st-al" points="160,55 174,51 188,59 202,51 216,59 230,51 244,59 258,55"/>
+    <polyline class="st-pro" points="286,54 302,34 318,76 334,38 350,72 366,46 382,64 398,38 414,70 430,42 446,66 462,36 478,74 494,48 510,60 526,40 542,68 558,46 574,62 590,38 606,72 622,44 638,64 654,40 670,68 686,50 702,58 718,42 734,66 750,46 766,60 782,52 798,56 814,50 830,58 846,54 862,56 878,54"/>
+    <text x="210" y="104" class="l-al" text-anchor="middle">3 s de bloqueo</text>
+    <line x1="450" y1="112" x2="450" y2="134" class="d-ln" marker-end="url(#dgA)"/>
+    <text x="464" y="128" class="l-tool">transcribe</text>
+    <rect x="8" y="142" width="884" height="42" rx="3" class="d-box tool"/>
+    <text x="26" y="168" class="d-tx">«Quiero el coche rojo que está en la caja.»</text>
+    <text x="874" y="168" class="l-tool" text-anchor="end">frase limpia</text>
+  </svg>
+  <p class="dg-cap">La herramienta hace exactamente lo que está construida para hacer · el problema es lo que esperábamos nosotros</p>
+  <p class="lead wide"><strong>No es un fallo.</strong> Está construido para devolver lo que se dijo, y de paso limpia justo aquello que veníamos a medir. Funciona perfectamente: el problema éramos nosotros.</p>
+  
+</section>
+
+<!-- ============ 10 · P03 INTRO ============ -->
+<section class="slide center" data-t="17:05" data-tramo="P03 · tres fallos">
+  <p class="eyebrow">17:05 · Qué sostiene el criterio y qué no</p>
+  <h1 style="max-width:18ch">Tres fallos míos, de menos a más incómodo</h1>
+  
+</section>
+
+<!-- ============ 11 · FALLO 1 ============ -->
+<section class="slide" data-t="17:05" data-tramo="P03 · fallo 1">
+  <p class="eyebrow">Fallo 1 · PRET-A Fluidez</p>
+  <h2>Un ejemplo que se quedó dentro</h2>
+  <p class="lead wide">Un evento de muestra, puesto para probar, se quedó en el código. Salía <strong>en todas las evaluaciones</strong>: una disfluencia que ese paciente no había producido.</p>
+  <p class="small">Semanas sin que nadie lo viera, porque el informe tenía muy buena pinta.</p>
+  
+</section>
+
+<!-- ============ 12 · FALLO 2 ============ -->
+<section class="slide" data-t="17:09" data-tramo="P03 · fallo 2">
+  <p class="eyebrow">Fallo 2 · DisfagiaCare</p>
+  <h2>Tres síntomas y un nivel de textura</h2>
+  <p class="lead wide">Un cuestionario de tres preguntas producía un <strong>nivel IDDSI</strong>. Ejecutar la indicación estaba bien resuelto; el problema era que la herramienta llegaba a <strong>tomarla</strong>.</p>
+  <div class="shot"><b>Falta la captura · el cuestionario de tres síntomas</b>
+    <span>Con el nivel IDDSI que devolvía. También está en tu checklist.</span></div>
+  <p class="small">El arreglo fue de dos líneas y dice bastante: el nivel lo mete el profesional, y el cuestionario deja de opinar.</p>
+  
+</section>
+
+<!-- ============ 13 · FALLO 3 · LA LISTA ============ -->
+<section class="slide" data-t="17:13" data-tramo="P03 · fallo 3 · en vivo">
+  <p class="eyebrow">Fallo 3 · ahora, en directo</p>
+  <h2>Veinte palabras con /r/ vibrante múltiple</h2>
+  <div class="words">
+    <span class="word">rosa</span><span class="word">ratón</span><span class="word">cara</span><span class="word">rueda</span>
+    <span class="word">tren</span><span class="word">río</span><span class="word">perro</span><span class="word">rama</span>
+  </div>
+  <p class="lead" style="margin-top:1.2em">Contad conmigo las que no llevan el fonema. En voz alta.</p>
+  <div class="shot"><b>Plan B · falta la captura de la tirada que sí falló</b>
+    <span>Solo se enseña si hoy sale impecable. Es la tercera de tu checklist.</span></div>
+  
+</section>
+
+<!-- ============ 14 · AVATAR ============ -->
+<section class="slide center" data-t="17:19" data-tramo="P04 · la pregunta">
+  <div class="quote" style="max-width:20ch">¿Esto ayuda…<br>o solo impresiona?</div>
+  <p class="quote-src">La pregunta con la que vamos a votar</p>
+  
+</section>
+
+<!-- ============ 15 · P04 · VOTACIÓN ============ -->
+<section class="slide" data-t="17:20" data-tramo="P04 · qué no delegar">
+  <p class="eyebrow">17:20 · Votamos antes de hablar</p>
+  <h2>Seis situaciones de consulta</h2>
+  <p class="lead wide">Se abre la encuesta. Cada uno vota <strong>por su cuenta</strong>, sin mirar al de al lado y sin que se vea quién ha votado qué. Si hablo yo primero, votáis lo que creéis que quiero oír.</p>
+  <p class="small">Los resultados se enseñan cuando estén los seis votos, y ahí empieza la conversación.</p>
+  
+</section>
+
+<!-- ============ 16 · PAUSA ============ -->
+<section class="slide center" data-t="17:30" data-tramo="Pausa">
+  <p class="eyebrow">17:30</p>
+  <h1>Pausa · 5 minutos</h1>
+  <p class="lead">Volvemos a las 17:35</p>
+  
+</section>
+
+<!-- ============ 17 · P18 ============ -->
+<section class="slide" data-t="17:35" data-tramo="P18 · dónde falla hoy">
+  <p class="eyebrow">17:35 · Dónde falla hoy</p>
+  <h2>De dónde sale lo que te devuelve</h2>
+  <div class="cols">
+    <div class="card mid"><b>Qué acentos transcribe peor</b><span>Y a quién deja fuera eso</span></div>
+    <div class="card mid"><b>Qué considera «normal»</b><span>Qué familia, qué casa, qué rutina</span></div>
+    <div class="card mid"><b>Qué nombres pone a qué papeles</b><span>Quién cocina y quién trabaja</span></div>
+  </div>
+  <p class="lead wide" style="margin-top:1.4em">En logopedia importa más que en otros sitios, porque <strong>el material generado va a personas concretas</strong>.</p>
+  
+</section>
+
+<!-- ============ 18 · APLICACIÓN P18 ============ -->
+<section class="slide" data-t="17:44" data-tramo="P18 · qué se hace cuando falla">
+  <p class="eyebrow">2 minutos · el séptimo fallo, y el único con final distinto</p>
+  <h2>Lo monté, no daba, y volví atrás</h2>
+  <p class="lead wide">Un generador mío, montado en el sistema nuevo de proyectos. Entró gente, <strong>se quedó corto</strong>, y lo devolví a la herramienta vieja porque para eso funcionaba mejor.</p>
+  <p class="lead wide">Los otros seis enseñan <strong>que algo falla</strong>. Este enseña <strong>qué haces cuando falla</strong>, que es lo que de verdad hace falta saber.</p>
+  
+</section>
+
+<section class="slide" data-t="17:46" data-tramo="P18 · aplicación">
+  <p class="eyebrow">En vivo · lo pedimos ahora</p>
+  <h2>«Una actividad de vocabulario de la casa para un niño de seis años»</h2>
+  <p class="lead wide">Y lo leemos despacio buscando <strong>lo que nadie ha pedido</strong>: qué casa se ha imaginado, quién cocina en ella, qué da por hecho que hay en la nevera, qué español habla esta gente.</p>
+  
+</section>
+
+<!-- ============ 19 · P19 ============ -->
+<section class="slide" data-t="17:55" data-tramo="P19 · los datos">
+  <p class="eyebrow">17:55 · Qué puedo subir y qué no</p>
+  <h2>Las iniciales no anonimizan</h2>
+  <p class="lead wide">Un dato sigue siendo personal mientras <strong>el conjunto</strong> permita llegar a la persona. Y en logopedia se llega antes de lo que parece.</p>
+  <div class="ask">Diagnóstico poco frecuente
+  <b>+</b> localidad pequeña
+  <b>+</b> edad exacta
+  <b>=</b> un único niño de la provincia</div>
+  
+</section>
+
+<!-- ============ 20 · SHIELD ============ -->
+<section class="slide" data-t="17:58" data-tramo="P19 · la herramienta que llega tarde">
+  <p class="eyebrow">Una herramienta propia, para criticarla</p>
+  <h2>Un GPT que anonimiza antes de procesar</h2>
+  <div class="demo">
+    <span class="demo-tag">Se abre en vivo</span>
+    <p class="small" style="margin:0">Detecta datos identificativos en un informe y los sustituye antes de trabajar con él.</p>
+    <a class="abre" href="https://chatgpt.com/share/6a380e4f-5490-83eb-bf07-e7415b865f03" target="_blank" rel="noopener">Abrir Shield ↗ <small>chatgpt.com/share</small></a>
+    <div class="backup"><b>Si no carga:</b> se cuenta sin abrirlo. La pregunta funciona igual sin la pantalla, y esta diapositiva ya dice lo que hace.</div>
+  </div>
+  <p class="lead" style="margin-top:1.2em">Para que te lo anonimice… <em class="hl">¿qué has tenido que hacer antes?</em></p>
+  <svg class="dg" viewBox="0 0 900 150" role="img" aria-label="Para que la herramienta anonimice el texto clínico, primero hay que pegárselo: los datos salen de la consulta antes de que la herramienta actúe.">
+    <rect x="8" y="46" width="220" height="64" rx="3" class="d-box pro"/>
+    <text x="118" y="72" class="d-tx f-pro" text-anchor="middle">Tu historia</text>
+    <text x="118" y="92" class="d-tx f-pro" text-anchor="middle">clínica</text>
+    <line x1="228" y1="78" x2="352" y2="78" class="st-al" marker-end="url(#dgA)"/>
+    <text x="290" y="64" class="l-al" text-anchor="middle">se la pegas</text>
+    <text x="290" y="102" class="l-al" text-anchor="middle">ya ha salido</text>
+    <rect x="356" y="46" width="190" height="64" rx="3" class="d-box tool"/>
+    <text x="451" y="72" class="d-tx f-tool" text-anchor="middle">La herramienta</text>
+    <text x="451" y="92" class="d-tx f-tool" text-anchor="middle">anonimiza</text>
+    <line x1="546" y1="78" x2="656" y2="78" class="d-ln" marker-end="url(#dgA)"/>
+    <rect x="660" y="46" width="232" height="64" rx="3" class="d-box"/>
+    <text x="776" y="72" class="d-tx" text-anchor="middle">Texto sin</text>
+    <text x="776" y="92" class="d-tx" text-anchor="middle">identificadores</text>
+    <rect x="228" y="18" width="124" height="1.5" class="f-al"/>
+    <text x="290" y="12" class="l-al" text-anchor="middle">el problema está aquí</text>
+    <line x1="290" y1="20" x2="290" y2="42" class="st-al" marker-end="url(#dgA)"/>
+    <text x="8" y="140" class="d-tx bg f-pro">Pegárselo. La herramienta llega tarde por definición.</text>
+  </svg>
+  
+</section>
+
+<!-- ============ 21 · LAS QUE SUENAN BIEN ============ -->
+<!-- ============ 21b · LA LISTA VERDE ============ -->
+<section class="slide" data-t="18:00" data-tramo="P19 · lo que sí">
+  <p class="eyebrow">Lo que os lleváis de este tramo</p>
+  <h2>Lo que <em class="hl">sí</em> podéis subir</h2>
+  <div class="ask">Subid lo que <b>no permita llegar a la persona</b></div>
+  <div class="cols">
+    <div class="card ok"><b>Un perfil, no una persona</b><span>«Niña de seis años, sustituye fonemas en habla espontánea, correctos en repetición.» Eso no es nadie</span></div>
+    <div class="card ok"><b>Vuestros objetivos, para redactarlos</b><span>Los decidís vosotros; los ponen en lenguaje observable y medible</span></div>
+    <div class="card ok"><b>Material de trabajo</b><span>Listas, tableros, fichas, secuencias, apoyos visuales</span></div>
+    <div class="card ok"><b>Plantillas en blanco</b><span>La estructura de un informe, sí. El informe, no</span></div>
+    <div class="card ok"><b>Una pregunta técnica</b><span>Qué evidencia hay sobre tal abordaje. Y luego se comprueba</span></div>
+    <div class="card ok"><b>Un texto vuestro, para adaptarlo</b><span>Vuestro correo, vuestra explicación, vuestro guion. Sin nombres</span></div>
+    <div class="card ok"><b>Vuestra forma de trabajar</b><span>Criterios, dudas, qué miráis primero. Lo que más rendimiento da</span></div>
+    <div class="card ok"><b>Y lo público</b><span>Un artículo, una guía, una escala publicada. Con su cita</span></div>
+  </div>
+  <p class="small" style="margin-top:1.2em"><b>La prueba de los tres datos:</b> si alguien de vuestra provincia, con tres datos de ese texto, sabe de quién habláis, no sube.</p>
+  
+</section>
+
+<section class="slide" data-t="18:02" data-tramo="P19 · el contrapeso">
+  <p class="eyebrow">Y algo que <em class="hl">sí</em>, antes de seguir</p>
+  <h2>Algo que dar que no sea de nadie más</h2>
+  <div class="abrir-fila">
+    <a class="abre" href="https://claude.ai/code/artifact/6c684708-713a-4073-9a9e-6c0d7d67fbb1" target="_blank" rel="noopener">Los dos juegos ↗</a>
+    <span class="abrir-nota">«Todo lo que se juega se queda en el aparato. No se envía nada y no hace falta ninguna cuenta.»</span>
+  </div>
+  <p class="lead wide" style="margin-top:1.3em">Eso no es una nota técnica. Es la respuesta al <strong>PDF que circula por WhatsApp</strong>, y no se arregla con un sermón sobre derechos de autor.</p>
+  
+</section>
+
+
+<!-- ============ 22 · P21 · LA TAREA ============ -->
+<section class="slide center" data-t="18:05" data-tramo="P21 · de un uso suelto a un flujo">
+  <p class="eyebrow">18:15 · Y ahora lo montamos con lo vuestro</p>
+  <h1 style="max-width:20ch">¿Qué tarea repetís todas las semanas?</h1>
+  
+</section>
+
+<!-- ============ 23 · LOS CUATRO PASOS ============ -->
+<section class="slide" data-t="18:07" data-tramo="P21 · el flujo">
+  <p class="eyebrow">Lo escribimos ahora, en cuatro pasos</p>
+  <h2>De consulta suelta a flujo</h2>
+  <div class="steps">
+    <div class="step"><i>1</i><b>Objetivo y perfil</b><u class="pro">Tú</u></div>
+    <div class="step"><i>2</i><b>La petición, con sus cuatro partes</b><u class="tool">Herramienta</u></div>
+    <div class="step"><i>3</i><b>Comprobación ítem por ítem</b><u class="pro">Tú</u></div>
+    <div class="step"><i>4</i><b>Guardar la petición que funcionó, con su fecha</b><u class="pro">Tú</u></div>
+  </div>
+  <p class="lead wide" style="margin-top:1.3em">Un flujo no es que intervengan varias herramientas. Es que <strong>los pasos están decididos antes de empezar</strong> y se repiten igual en cada caso.</p>
+  
+</section>
+
+<!-- ============ 23b · LO HACEMOS AHORA ============ -->
+<section class="slide" data-t="18:15" data-tramo="Lo hacemos ahora, con lo vuestro">
+  <p class="eyebrow">18:15 · Y ahora no os lo explico: lo ejecutamos</p>
+  <h2>Los cuatro pasos, sobre <em class="hl">vuestra</em> tarea</h2>
+  <div class="demo">
+    <span class="demo-tag">En vivo · sin red</span>
+    <p class="small" style="margin:0">La tarea la acaban de decir ellos por el chat. No hay versión preparada.</p>
+    <a class="abre" href="https://chatgpt.com/" target="_blank" rel="noopener">Abrir el chat ↗</a>
+    <div class="backup"><b>Si algo falla:</b> se dice y se sigue con lo que haya salido. Que falle delante también enseña, y es el tramo donde menos importa.</div>
+  </div>
+  <div class="steps" style="margin-top:1.2em">
+    <div class="step"><i>1</i><b>Objetivo y perfil</b><u class="pro">Ya lo tenemos</u></div>
+    <div class="step"><i>2</i><b>Escribo la petición delante</b><u class="tool">Mirad lo que NO pido</u></div>
+    <div class="step"><i>3</i><b>La comprobación</b><u class="pro">Por el chat, vosotros</u></div>
+    <div class="step"><i>4</i><b>Guardo la que funcionó</b><u class="pro">Con su fecha</u></div>
+  </div>
+  <p class="lead wide" style="margin-top:1.3em">Esto yo tardé dos años en hacerlo sin pensar. Vosotros lo habéis hecho el primer día. <strong>No porque seáis más listos: porque os he dado el atajo.</strong></p>
+  
+</section>
+
+<!-- ============ 24 · EL SELLO, EN DIRECTO ============ -->
+<section class="slide" data-t="18:23" data-tramo="El sello · 60 segundos">
+  <p class="eyebrow">60 segundos · con los cuatro pasos todavía en pantalla</p>
+  <h2>¿Cuánto de esto es tuyo?</h2>
+  <p class="lead wide">Acabamos de tener una conversación con una IA, aquí, delante de todos. <strong>Vamos a medir qué parte la habéis puesto vosotros.</strong> Y no lo digo yo: lo dice la conversación.</p>
+  <div class="abrir-fila">
+    <a class="abre" href="https://claude.ai/code/artifact/064861d2-2080-467e-9acc-37dc616706ca" target="_blank" rel="noopener">Abrir el sello ↗</a>
+    <span class="abrir-nota">Con la conversación que acabáis de dirigir vosotros, la de hace un minuto.</span>
+  </div>
+  <p class="lead wide" style="margin-top:1.2em">Las preguntas que hace <strong>son los cuatro pasos de la diapositiva anterior</strong>. Por eso no hay que explicarlo.</p>
+  <svg class="dg" viewBox="0 0 900 96" role="img" aria-label="El sello reparte el trabajo en cinco fases: decisión clínica 30 por ciento, comprobación 25, la instrucción 20, generación 15 —la única que hace la máquina— y redacción final 10.">
+    <rect x="8" y="10" width="262" height="34" rx="2" class="f-pro"/>
+    <text x="139" y="32" class="d-on" text-anchor="middle">Decisión clínica · 30 %</text>
+    <rect x="275" y="10" width="219" height="34" rx="2" class="f-pro"/>
+    <text x="384" y="32" class="d-on" text-anchor="middle">Comprobación · 25 %</text>
+    <rect x="499" y="10" width="175" height="34" rx="2" class="f-pro"/>
+    <text x="586" y="32" class="d-on" text-anchor="middle">Instrucción · 20 %</text>
+    <rect x="679" y="10" width="131" height="34" rx="2" class="f-tool"/>
+    <text x="744" y="32" class="d-on" text-anchor="middle">Genera · 15 %</text>
+    <rect x="815" y="10" width="77" height="34" rx="2" class="f-pro"/>
+    <text x="853" y="60" class="l-pro" text-anchor="middle">10 % texto</text>
+    <text x="8" y="84" class="l-pro">Decisión + comprobación = 55 % · exactamente lo que este curso dice que no se delega</text>
+  </svg>
+  <p class="dg-cap">Solo una de las cinco es de la máquina · y es la que todo el mundo cree que es la importante</p>
+  
+</section>
+
+<!-- ============ 25 · ENCARGO ============ -->
+<section class="slide" data-t="18:25" data-tramo="Encargo del bloque 1">
+  <p class="eyebrow">18:25 · Para la semana que viene</p>
+  <h2>Tres instrucciones sobre tu caso</h2>
+  <div class="steps">
+    <div class="step"><i>1</i><b>Organizar información de evaluación que ya tengas</b><u class="tool">40 min en total</u></div>
+    <div class="step"><i>2</i><b>Redactar objetivos que <em class="hl">tú</em> hayas decidido</b><u class="tool"></u></div>
+    <div class="step"><i>3</i><b>Explicar algo a la familia</b><u class="tool"></u></div>
+  </div>
+  <p class="lead wide" style="margin-top:1.3em">Se ejecutan, y en cada una anotas <strong>qué habría que revisar antes de usarla con un paciente</strong>. Eso último es lo que se evalúa — no lo bonito que haya quedado.</p>
+  <p class="lead wide">Y va <strong>con su sello</strong>, el de hace un minuto.</p>
+  <div class="abrir-fila">
+    <a class="abre" href="https://claude.ai/code/artifact/5af4d2cc-d76f-461b-a85b-b0535ed58e07" target="_blank" rel="noopener">Abrir el aula ↗</a>
+    <span class="abrir-nota">Para enseñar dónde está la plantilla y dónde se sube.</span>
+  </div>
+  
+</section>
+
+<!-- ============ 25 · CIERRE ============ -->
+<section class="slide center" data-t="18:30" data-tramo="Cierre">
+  <div class="quote" style="max-width:22ch">Nos vemos el 16 de octubre</div>
+  <p class="quote-src">Lo que no dio tiempo a preguntar, lo apunto y lo contesto al empezar la próxima</p>
+  
+</section>
+
+</div>
+
+<div class="grid" id="grid"></div>
+<div class="prog" id="prog"></div>
+
+<div class="bar">
+  <span class="clock" id="clock">16:30</span>
+  <span class="tramo" id="tramo">Apertura</span>
+  <span class="right">
+    <span id="upd">Actualizada 5 oct</span>
+    <span id="timer">00:00</span>
+    <button id="bTimer" type="button" aria-pressed="false">Cronómetro</button>
+    <button id="bNotes" type="button" aria-pressed="false">Notas · N</button>
+    <button id="bGrid" type="button" aria-pressed="false">Índice · O</button>
+    <button id="bTheme" type="button">Tema</button>
+    <span id="count">1 / 25</span>
+  </span>
+</div>
+
+<script>
+(function () {
+  // La copia pública no muestra las notas privadas del ponente.
+  document.querySelectorAll('.notes').forEach(function (n) { n.remove(); });
+  var notas = document.getElementById('bNotes');
+  if (notas) notas.hidden = true;
+  var body = document.body;
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var i = 0;
+
+  var elClock = document.getElementById('clock');
+  var elTramo = document.getElementById('tramo');
+  var elCount = document.getElementById('count');
+  var elProg  = document.getElementById('prog');
+  var elGrid  = document.getElementById('grid');
+
+  function show(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function (s, k) {
+      s.classList.toggle('on', k === i);
+      var nt = s.querySelector('.notes');
+      if (nt) nt.classList.toggle('on', k === i);
+    });
+    var s = slides[i];
+    elClock.textContent = s.getAttribute('data-t') || '';
+    elTramo.textContent = s.getAttribute('data-tramo') || '';
+    elCount.textContent = (i + 1) + ' / ' + slides.length;
+    elProg.style.width = ((i + 1) / slides.length * 100) + '%';
+    Array.prototype.forEach.call(elGrid.children, function (c, k) {
+      c.classList.toggle('here', k === i);
+    });
+    s.scrollTop = 0;
+  }
+
+  // índice
+  slides.forEach(function (s, k) {
+    var b = document.createElement('button');
+    b.className = 'gcell';
+    var h = s.querySelector('h1, h2');
+    b.innerHTML = '<i>' + (s.getAttribute('data-t') || '') + ' · ' + (k + 1) + '</i><span>' +
+      (h ? h.textContent.replace(/\s+/g, ' ').trim() : (s.getAttribute('data-tramo') || '')) + '</span>';
+    b.addEventListener('click', function () { body.classList.remove('grid-on'); bGrid.setAttribute('aria-pressed','false'); show(k); });
+    elGrid.appendChild(b);
+  });
+
+  // cronómetro
+  var t0 = null, tick = null;
+  var elTimer = document.getElementById('timer');
+  var bTimer = document.getElementById('bTimer');
+  function paintTimer() {
+    var s = t0 ? Math.floor((Date.now() - t0) / 1000) : 0;
+    var m = Math.floor(s / 60);
+    elTimer.textContent = (m < 10 ? '0' : '') + m + ':' + ((s % 60) < 10 ? '0' : '') + (s % 60);
+  }
+  function toggleTimer() {
+    if (tick) { clearInterval(tick); tick = null; t0 = null; elTimer.classList.remove('run'); bTimer.setAttribute('aria-pressed','false'); paintTimer(); }
+    else { t0 = Date.now(); elTimer.classList.add('run'); bTimer.setAttribute('aria-pressed','true'); tick = setInterval(paintTimer, 1000); paintTimer(); }
+  }
+  bTimer.addEventListener('click', toggleTimer);
+
+  // botones
+  var bNotes = document.getElementById('bNotes');
+  var bGrid = document.getElementById('bGrid');
+  function toggleNotes() {
+    var on = body.classList.toggle('notes-on');
+    bNotes.setAttribute('aria-pressed', on ? 'true' : 'false');
+  }
+  function toggleGrid() {
+    var on = body.classList.toggle('grid-on');
+    bGrid.setAttribute('aria-pressed', on ? 'true' : 'false');
+  }
+  bNotes.addEventListener('click', toggleNotes);
+  bGrid.addEventListener('click', toggleGrid);
+  document.getElementById('bTheme').addEventListener('click', function () {
+    var r = document.documentElement, now = r.getAttribute('data-theme');
+    if (!now) now = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    r.setAttribute('data-theme', now === 'dark' ? 'light' : 'dark');
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    var k = e.key;
+    if (k === 'ArrowRight' || k === 'PageDown' || k === ' ') { e.preventDefault(); show(i + 1); }
+    else if (k === 'ArrowLeft' || k === 'PageUp') { e.preventDefault(); show(i - 1); }
+    else if (k === 'Home') { show(0); }
+    else if (k === 'End') { show(slides.length - 1); }
+    else if (k === 'n' || k === 'N') { toggleNotes(); }
+    else if (k === 'o' || k === 'O') { toggleGrid(); }
+    else if (k === 't' || k === 'T') { toggleTimer(); }
+    else if (k === 'Escape') { body.classList.remove('grid-on'); bGrid.setAttribute('aria-pressed','false'); }
+    else if (k === 'f' || k === 'F') {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else document.documentElement.requestFullscreen && document.documentElement.requestFullscreen();
+    }
+  });
+
+  // avance por clic en el escenario, no en enlaces
+  document.getElementById('stage').addEventListener('click', function (e) {
+    if (e.target.closest('a') || e.target.closest('button') || e.target.closest('.notes')) return;
+    show(i + 1);
+  });
+
+  // copiar la petición de la diapositiva sin menú del botón derecho
+  Array.prototype.forEach.call(document.querySelectorAll('.copia'), function (b) {
+    var rotulo = b.textContent;
+    b.addEventListener('click', function () {
+      var caja = b.closest('.slide').querySelector('.ask');
+      var texto = caja.textContent.replace(/\s*\n\s*/g, ' ').replace(/\s+/g, ' ').trim();
+      function hecho() { b.textContent = 'Copiada ✓'; b.classList.add('ok'); setTimeout(function () { b.textContent = rotulo; b.classList.remove('ok'); }, 2500); }
+      function aMano() { var r = document.createRange(); r.selectNodeContents(caja); var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r); b.textContent = 'Seleccionada: pulsa Cmd+C'; }
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(texto).then(hecho, aMano);
+      else aMano();
+    });
+  });
+
+  // enlace directo a una diapositiva: …#d5 abre la quinta (lo usa el apuntador con escena:)
+  function desdeHash() {
+    var m = /^#d(\d+)$/.exec(location.hash || '');
+    if (m) { show(parseInt(m[1], 10) - 1); return true; }
+    return false;
+  }
+  window.addEventListener('hashchange', desdeHash);
+  if (!desdeHash()) show(0);
+  paintTimer();
+})();
+</script>
+
+</body>
+</html>
